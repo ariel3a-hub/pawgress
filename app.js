@@ -1,5 +1,6 @@
 // Set this to the URL of your deployed Pawgress instance, e.g.
 // "https://pawgress.onrender.com". Leave it empty to show a placeholder.
+// This file is served from https://ariel3a-hub.github.io/pawgress/app.js
 var LIVE_APP_URL = "";
 
 (function () {

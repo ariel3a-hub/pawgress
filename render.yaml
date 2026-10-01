@@ -23,7 +23,7 @@ services:
       sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
-        value: "3.13.5"
+        value: "3.14.3"
       # The disk holds the SQLite database, uploaded dog photos, the session
       # signing key and the VAPID key pair.
       - key: DOGCARE_DATA_DIR

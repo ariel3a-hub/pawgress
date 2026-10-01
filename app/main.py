@@ -12,7 +12,14 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.templating import Jinja2Templates
 
 from . import notifications
-from .config import REMINDER_POLL_SECONDS, SECRET_KEY, SESSION_COOKIE, SESSION_MAX_AGE, UPLOAD_DIR
+from .config import (
+    REMINDER_POLL_SECONDS,
+    SECRET_KEY,
+    SESSION_COOKIE,
+    SESSION_HTTPS_ONLY,
+    SESSION_MAX_AGE,
+    UPLOAD_DIR,
+)
 from .db import SessionLocal, init_db
 from .models import utcnow
 from .routers import auth, dogs, events, groups, push_api, settings
@@ -72,7 +79,7 @@ app.add_middleware(
     session_cookie=SESSION_COOKIE,
     max_age=SESSION_MAX_AGE,
     same_site="lax",
-    https_only=False,
+    https_only=SESSION_HTTPS_ONLY,
 )
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")

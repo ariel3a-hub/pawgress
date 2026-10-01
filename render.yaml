@@ -1,0 +1,38 @@
+# Render Blueprint - https://render.com/docs/blueprint-spec
+#
+# Deploy: Render dashboard -> New -> Blueprint -> point at this repo.
+# Or: https://dashboard.render.com/blueprint/new?repo=https://github.com/ariel3a-hub/pawgress
+services:
+  - type: web
+    name: pawgress
+    runtime: python
+    plan: starter
+    branch: main
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    # HOST/PORT come from Render. RELOAD=0 is required: uvicorn's reloader
+    # spawns a child process and Render supervises only the parent.
+    startCommand: python main.py
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    # Single instance, because the reminder scheduler runs in-process and
+    # Render does not allow scaling a service that has a disk attached.
+    numInstances: 1
+    disk:
+      name: pawgress-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.5"
+      # The disk holds the SQLite database, uploaded dog photos, the session
+      # signing key and the VAPID key pair.
+      - key: DOGCARE_DATA_DIR
+        value: /data
+      - key: SESSION_HTTPS_ONLY
+        value: "true"
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+      - key: RELOAD
+        value: "0"
+      - key: SECRET_KEY
+        generateValue: true

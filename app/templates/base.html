@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Pawgress{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐕</text></svg>">
+</head>
+<body>
+{% if not hide_nav %}
+<header class="topbar">
+  <a class="brand" href="/groups">
+    <span class="brand-mark">🐾</span> Pawgress
+  </a>
+
+  {% if current_user %}
+  <nav class="topnav">
+    <a href="/groups">Groups</a>
+    <a href="/notifications" class="bell" title="Notifications">
+      🔔
+      {% if unread_count %}<span class="badge">{{ unread_count }}</span>{% endif %}
+    </a>
+    <a href="/settings">Settings</a>
+    <span class="who">{{ current_user.username }}</span>
+    <form method="post" action="/logout" class="inline">
+      <button class="link" type="submit">Log out</button>
+    </form>
+  </nav>
+  {% else %}
+  <nav class="topnav">
+    <a href="/login">Log in</a>
+    <a href="/signup">Sign up</a>
+  </nav>
+  {% endif %}
+</header>
+{% endif %}
+
+<main class="page">
+  {% if flash %}
+  <div class="flash flash-{{ flash.category }}">{{ flash.message }}</div>
+  {% endif %}
+  {% if errors %}
+  <ul class="flash flash-error error-list">
+    {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Log in · Pawgress{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1>🐕 Log in</h1>
+  <p class="muted">Track fed, walked and everything else, together.</p>
+
+  <form method="post" action="/login" class="stack">
+    <label>
+      Username or email
+      <input name="identifier" required autofocus value="{{ form.identifier or '' }}"
+             autocomplete="username">
+    </label>
+    <label>
+      Password
+      <input name="password" type="password" required autocomplete="current-password">
+    </label>
+    <button class="btn primary" type="submit">Log in</button>
+  </form>
+
+  <p class="muted center">No account yet? <a href="/signup">Create one</a></p>
+</div>
+{% endblock %}

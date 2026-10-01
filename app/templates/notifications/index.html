@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Notifications · Pawgress{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Notifications</h1>
+    <p class="muted">Everything that happened while you were away.</p>
+  </div>
+  {% if notifications %}
+  <form method="post" action="/notifications/read-all" class="inline">
+    <button class="btn small" type="submit">Mark all as read</button>
+  </form>
+  {% endif %}
+</div>
+
+{% if notifications %}
+<ul class="notify-list">
+  {% for item in notifications %}
+  <li class="{{ 'unread' if not item.is_read else '' }}">
+    <a href="{{ item.url }}">
+      <strong>{{ item.title }}</strong>
+      <small class="muted">{{ item.created_at|localtime|strftime('%d %b %Y, %H:%M') }} ·
+        {{ 'Group reminder' if item.kind == 'group_reminder' else 'New event' }}</small>
+      {% if item.body %}<small class="muted">{{ item.body }}</small>{% endif %}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="card">
+  <p class="empty">Nothing here yet. Events added by your group members will show up here.</p>
+</div>
+{% endif %}
+{% endblock %}

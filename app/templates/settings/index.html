@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Settings · Pawgress{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Notification settings</h1>
+  <p class="muted">Choose what Pawgress tells you about.</p>
+</div>
+
+<form method="post" action="/settings/notifications" class="stack-lg">
+  <section class="card">
+    <h2>New events</h2>
+    <label class="switch">
+      <input type="checkbox" name="new_events_enabled" {% if preference.new_events_enabled %}checked{% endif %}>
+      <span>
+        <strong>Notify me about new events</strong>
+        <small class="muted">When a member logs fed, walked, pooped or peed.</small>
+      </span>
+    </label>
+
+    <fieldset class="kinds" {{ '' if preference.new_events_enabled else 'disabled' }}>
+      <legend>Event types I care about</legend>
+      {% for kind in event_kinds %}
+      <label class="check">
+        <input type="checkbox" name="kinds" value="{{ kind }}"
+               {% if kind in preference.event_kinds %}checked{% endif %}>
+        <span>{{ event_icons[kind] }} {{ event_labels[kind] }}</span>
+      </label>
+      {% endfor %}
+      <p class="hint">Only the ticked types will raise a notification.</p>
+    </fieldset>
+  </section>
+
+  <section class="card">
+    <h2>Group reminders</h2>
+    <label class="switch">
+      <input type="checkbox" name="group_reminders_enabled" {% if preference.group_reminders_enabled %}checked{% endif %}>
+      <span>
+        <strong>Notify me about group reminders</strong>
+        <small class="muted">Reminders sent to everyone in a group you belong to.</small>
+      </span>
+    </label>
+  </section>
+
+  <section class="card">
+    <h2>Delivery</h2>
+    <label class="switch">
+      <input type="checkbox" name="web_push_enabled" id="web-push-toggle" {% if preference.web_push_enabled %}checked{% endif %}>
+      <span>
+        <strong>Browser notifications</strong>
+        <small class="muted">Show a system notification even when this tab is closed.</small>
+      </span>
+    </label>
+    <p class="push-state" id="push-state">Checking notification permission…</p>
+  </section>
+
+  <div class="actions">
+    <button class="btn primary" type="submit">Save settings</button>
+    <a class="btn" href="/notifications">See my notifications</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/push.js" defer></script>
+<script>
+  document.querySelectorAll('input[name="kinds"]').forEach(function (input) {
+    input.addEventListener('change', function () {
+      var box = document.querySelector('input[name="new_events_enabled"]');
+      document.querySelector('fieldset.kinds').disabled = !box.checked;
+    });
+  });
+</script>
+{% endblock %}

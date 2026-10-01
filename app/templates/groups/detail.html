@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} · Pawgress{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ group.name }}</h1>
+    <p class="muted">
+      {{ group.dogs | length }} dog{{ '' if group.dogs | length == 1 else 's' }} ·
+      {{ members | length }} member{{ '' if members | length == 1 else 's' }} ·
+      {% if is_owner %}you are the owner{% else %}you are a member{% endif %}
+    </p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/groups/{{ group.id }}/events">Events</a>
+    <a class="btn primary" href="/groups/{{ group.id }}/events/new">Add event</a>
+  </div>
+</div>
+
+<div class="two-col">
+  <section class="card">
+    <div class="card-head">
+      <h2>Dogs</h2>
+      {% if is_owner %}
+      <a class="btn small" href="/groups/{{ group.id }}/dogs/new">+ Add dog</a>
+      {% endif %}
+    </div>
+
+    {% if dogs %}
+    <div class="dog-grid">
+      {% for dog in dogs %}
+      <article class="dog-card">
+        <a href="/dogs/{{ dog.id }}" class="dog-photo">
+          {% if dog.photo_path %}
+          <img src="{{ dog.photo_path }}" alt="{{ dog.name }}">
+          {% else %}
+          <span class="dog-emoji">🐶</span>
+          {% endif %}
+        </a>
+        <div class="dog-info">
+          <strong>{{ dog.name }}</strong>
+          <small class="muted">{{ dog.age_label }}</small>
+          {% set last = last_events.get(dog.id) %}
+          <small class="muted">
+            {% if last %}Last event {{ (last|localtime).strftime('%d %b, %H:%M') }}{% else %}No events yet{% endif %}
+          </small>
+          <div class="dog-actions">
+            <a class="btn tiny" href="/groups/{{ group.id }}/events?dog_id={{ dog.id }}">Timeline</a>
+            <a class="btn tiny primary" href="/groups/{{ group.id }}/events/new?dog_id={{ dog.id }}">Log event</a>
+            {% if is_owner %}
+            <a class="btn tiny" href="/dogs/{{ dog.id }}/edit">Edit</a>
+            <form method="post" action="/dogs/{{ dog.id }}/delete" class="inline"
+                  data-confirm="Remove {{ dog.name }} and all of its events?">
+              <button class="btn tiny danger" type="submit">Delete</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">{% if is_owner %}No dogs yet — add your first one.{% else %}The owner has not added any dogs yet.{% endif %}</p>
+    {% endif %}
+  </section>
+
+  <div class="stack-lg">
+    <section class="card">
+      <h2>Members</h2>
+      <ul class="member-list">
+        {% for member in members %}
+        <li>
+          <span class="avatar">{{ member.user.username[:1] | upper }}</span>
+          <span class="group-meta">
+            <strong>{{ member.user.username }}{% if member.user_id == current_user.id %} (you){% endif %}</strong>
+            <small class="muted">{{ 'Owner' if member.role == 'owner' else 'Member' }} · joined {{ member.joined_at|localtime|strftime('%d %b %Y') }}</small>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <p class="join-code">
+        Join code <code>{{ group.join_code }}</code>
+      </p>
+
+      {% if is_owner and members | length > 1 %}
+      <form method="post" action="/groups/{{ group.id }}/transfer" class="stack">
+        <h3>Transfer ownership</h3>
+        <label>
+          New owner
+          <select name="member_id" required>
+            {% for member in members %}
+            {% if member.role != 'owner' %}
+            <option value="{{ member.id }}">{{ member.user.username }}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </label>
+        <button class="btn" type="submit">Make them the owner</button>
+        <p class="hint">You will become a regular member.</p>
+      </form>
+      {% endif %}
+
+      <form method="post" action="/groups/{{ group.id }}/leave" class="inline"
+            data-confirm="{% if is_owner %}You own this group. Leaving hands it over or deletes it. Continue?{% else %}Leave this group?{% endif %}">
+        <button class="btn small danger" type="submit">Leave group</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Group reminders</h2>
+      <p class="muted">Reminders notify every member of this group.</p>
+
+      <form method="post" action="/groups/{{ group.id }}/reminders" class="stack">
+        <label>
+          Title
+          <input name="title" required maxlength="120" placeholder="Vet appointment tomorrow 10:00">
+        </label>
+        <label>
+          Details
+          <input name="body" maxlength="400" placeholder="Bring vaccination papers">
+        </label>
+        <label>
+          When
+          <input name="scheduled_for" type="datetime-local" required
+                 value="{{ reminder_form.scheduled_for or '' }}">
+        </label>
+        <button class="btn primary" type="submit">Schedule for everyone</button>
+        <p class="hint">A time in the past sends it right away.</p>
+      </form>
+
+      {% if reminders %}
+      <ul class="reminder-list">
+        {% for reminder in reminders %}
+        <li class="{{ 'sent' if reminder.is_sent else '' }}">
+          <div>
+            <strong>{{ reminder.title }}</strong>
+            <small class="muted">
+              {% if reminder.is_sent %}
+              Sent {{ reminder.sent_at|localtime|strftime('%d %b, %H:%M') }}
+              {% else %}
+              Due {{ reminder.scheduled_for|localtime|strftime('%d %b %Y, %H:%M') }}
+              {% endif %}
+              · by {{ reminder.author.username }}
+            </small>
+            {% if reminder.body %}<small class="muted">{{ reminder.body }}</small>{% endif %}
+          </div>
+          {% if is_owner or reminder.created_by == current_user.id %}
+          <form method="post" action="/reminders/{{ reminder.id }}/delete" class="inline"
+                data-confirm="Delete this reminder?">
+            <button class="btn tiny danger" type="submit">Delete</button>
+          </form>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

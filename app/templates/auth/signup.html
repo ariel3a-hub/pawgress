@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Sign up · Pawgress{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1>🐾 Create your account</h1>
+  <p class="muted">Then create a group or join one with a code.</p>
+
+  <form method="post" action="/signup" class="stack">
+    <label>
+      Username
+      <input name="username" required autofocus value="{{ form.username or '' }}"
+             autocomplete="username" pattern="[A-Za-z0-9_]{3,32}">
+      <span class="hint">3-32 characters: letters, numbers, underscores.</span>
+    </label>
+    <label>
+      Email
+      <input name="email" type="email" required value="{{ form.email or '' }}"
+             autocomplete="email">
+    </label>
+    <label>
+      Password
+      <input name="password" type="password" required minlength="8" autocomplete="new-password">
+      <span class="hint">At least 8 characters.</span>
+    </label>
+    <label>
+      Confirm password
+      <input name="password_confirm" type="password" required minlength="8"
+             autocomplete="new-password">
+    </label>
+    <button class="btn primary" type="submit">Sign up</button>
+  </form>
+
+  <p class="muted center">Already registered? <a href="/login">Log in</a></p>
+</div>
+{% endblock %}

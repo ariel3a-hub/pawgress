@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# runtime state: database, uploads, session signing key, VAPID private key
+data/
+
+.idea/

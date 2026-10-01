@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Add event · {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Add an event</h1>
+    <p class="muted">Pick a dog, then say what happened.</p>
+  </div>
+  <a class="btn" href="/groups/{{ group.id }}/events">Cancel</a>
+</div>
+
+{% if not dogs %}
+<div class="card">
+  <p class="empty">This group has no dogs yet.</p>
+</div>
+{% else %}
+
+<section class="card">
+  <h2><span class="step">1</span> Choose a dog</h2>
+  <div class="pick-grid" id="dog-picker">
+    {% for dog in dogs %}
+    <a class="pick-card {{ 'active' if selected_dog and selected_dog.id == dog.id }}"
+       href="/groups/{{ group.id }}/events/new?dog_id={{ dog.id }}"
+       data-dog-id="{{ dog.id }}">
+      <span class="pick-photo">
+        {% if dog.photo_path %}
+        <img src="{{ dog.photo_path }}" alt="{{ dog.name }}">
+        {% else %}
+        <span class="dog-emoji">🐶</span>
+        {% endif %}
+      </span>
+      <strong>{{ dog.name }}</strong>
+      <small class="muted">{{ dog.age_label }}</small>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="step">2</span> What happened?</h2>
+
+  {% for dog in dogs %}
+  <div class="event-step" data-dog-id="{{ dog.id }}"
+       {% if not selected_dog or selected_dog.id != dog.id %}hidden{% endif %}>
+    <p class="muted">Logging for <strong>{{ dog.name }}</strong> with you.</p>
+
+    <form method="post" action="/groups/{{ group.id }}/events" class="stack">
+      <input type="hidden" name="dog_id" value="{{ dog.id }}">
+
+      <div class="pick-grid kinds">
+        {% for kind in event_kinds %}
+        <button class="pick-card kind" type="submit" name="kind" value="{{ kind }}">
+          <span class="pick-photo">{{ event_icons[kind] }}</span>
+          <strong>{{ event_labels[kind] }}</strong>
+          <small class="muted">{{ dog.name }} with {{ current_user.username }}</small>
+        </button>
+        {% endfor %}
+      </div>
+
+      <label>
+        Note (optional)
+        <input name="note" maxlength="500" placeholder="Half a cup of kibble">
+      </label>
+    </form>
+  </div>
+  {% endfor %}
+
+  {% if not selected_dog %}
+  <p class="empty" id="no-dog-hint">Choose a dog above to see the event options.</p>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var picker = document.getElementById('dog-picker');
+  if (!picker) return;
+
+  var steps = document.querySelectorAll('.event-step');
+  var hint = document.getElementById('no-dog-hint');
+
+  function showStep(dogId) {
+    picker.querySelectorAll('.pick-card').forEach(function (card) {
+      card.classList.toggle('active', card.dataset.dogId === String(dogId));
+    });
+    steps.forEach(function (step) {
+      step.hidden = step.dataset.dogId !== String(dogId);
+    });
+    if (hint) hint.remove();
+  }
+
+  // Without JS the dog cards are links to ?dog_id= and the server picks the step.
+  picker.addEventListener('click', function (event) {
+    var card = event.target.closest('.pick-card');
+    if (!card) return;
+    event.preventDefault();
+    showStep(card.dataset.dogId);
+    window.history.replaceState({}, '', card.getAttribute('href'));
+  });
+
+  var active = picker.querySelector('.pick-card.active');
+  if (active) showStep(active.dataset.dogId);
+})();
+</script>
+{% endblock %}

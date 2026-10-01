@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Events · {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Events{% if selected_dog %} · {{ selected_dog.name }}{% endif %}</h1>
+    <p class="muted">Every logged event for {{ group.name }}.</p>
+  </div>
+  <div class="actions">
+    <a class="btn primary" href="/groups/{{ group.id }}/events/new{% if selected_dog %}?dog_id={{ selected_dog.id }}{% endif %}">
+      Add event
+    </a>
+    <a class="btn" href="/groups/{{ group.id }}">Group</a>
+  </div>
+</div>
+
+{% if dogs | length > 1 %}
+<div class="card filter-bar">
+  <form method="get" action="/groups/{{ group.id }}/events" id="dog-switcher">
+    <label for="dog_id">Show events for</label>
+    <select name="dog_id" id="dog_id">
+      <option value="">All dogs ({{ dogs | length }})</option>
+      {% for dog in dogs %}
+      <option value="{{ dog.id }}" {% if selected_dog and selected_dog.id == dog.id %}selected{% endif %}>
+        {{ dog.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </form>
+  <span class="hint">Switch dogs to see each one's events.</span>
+</div>
+{% endif %}
+
+{% if not dogs %}
+<div class="card">
+  <p class="empty">This group has no dogs yet, so there is nothing to track.</p>
+</div>
+{% elif days %}
+  {% for day, day_events in days %}
+  <section class="card">
+    <h2 class="day">{{ day }}</h2>
+    <ul class="timeline">
+      {% for event in day_events %}
+      <li>
+        <span class="icon">{{ event.icon }}</span>
+        <span class="group-meta">
+          <strong>{{ event.title }}</strong>
+          <small class="muted">
+            {{ event.created_at|localtime|strftime('%H:%M') }}
+            {% if dogs | length > 1 %} · <a href="/dogs/{{ event.dog.id }}">{{ event.dog.name }}</a>{% endif %}
+          </small>
+          {% if event.note %}<small class="muted">{{ event.note }}</small>{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+{% else %}
+<div class="card">
+  <p class="empty">
+    No events yet{% if selected_dog %} for {{ selected_dog.name }}{% endif %}.
+    <a href="/groups/{{ group.id }}/events/new">Log the first one.</a>
+  </p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if dogs | length > 1 %}
+<script>
+  document.getElementById('dog-switcher').addEventListener('change', function (event) {
+    this.submit();
+  });
+</script>
+{% endif %}
+{% endblock %}

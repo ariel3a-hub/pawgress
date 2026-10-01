@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if dog else 'Add a dog' }} · Pawgress{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{{ 'Edit ' + dog.name if dog else 'Add a dog to ' + group.name }}</h1>
+</div>
+
+<div class="card narrow">
+  <form method="post" enctype="multipart/form-data" class="stack"
+        action="{{ '/dogs/' ~ dog.id ~ '/edit' if dog else '/groups/' ~ group.id ~ '/dogs' }}">
+    <label>
+      Name
+      <input name="name" required maxlength="60" value="{{ form.name or '' }}" placeholder="Rex">
+    </label>
+
+    <label>
+      Birthday
+      <input name="birthday" type="date" value="{{ form.birthday or '' }}">
+      <span class="hint">Used to show the dog's age.</span>
+    </label>
+
+    <label>
+      Picture
+      <input name="photo" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+      <span class="hint">JPEG, PNG, WebP or GIF, up to 5 MB.</span>
+    </label>
+
+    {% if dog and dog.photo_path %}
+    <div class="preview">
+      <img src="{{ dog.photo_path }}" alt="{{ dog.name }}">
+      <span class="muted">Current picture — upload a new file to replace it.</span>
+    </div>
+    {% endif %}
+
+    <div class="actions">
+      <button class="btn primary" type="submit">{{ 'Save changes' if dog else 'Add dog' }}</button>
+      <a class="btn" href="/groups/{{ group.id }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

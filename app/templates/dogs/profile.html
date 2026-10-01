@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ dog.name }} · Pawgress{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ dog.name }}</h1>
+    <p class="muted">{{ dog.age_label }} · {{ group.name }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="/groups/{{ group.id }}/events?dog_id={{ dog.id }}">All events</a>
+    <a class="btn primary" href="/groups/{{ group.id }}/events/new?dog_id={{ dog.id }}">Log event</a>
+    <a class="btn" href="/groups/{{ group.id }}">Group</a>
+  </div>
+</div>
+
+<div class="two-col">
+  <section class="card">
+    <h2>Recent events</h2>
+    {% if events %}
+    <ul class="timeline">
+      {% for event in events %}
+      <li>
+        <span class="icon">{{ event.icon }}</span>
+        <span class="group-meta">
+          <strong>{{ event.title }}</strong>
+          <small class="muted">{{ event.created_at|localtime|strftime('%d %b %Y, %H:%M') }}</small>
+          {% if event.note %}<small class="muted">{{ event.note }}</small>{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty">No events logged for {{ dog.name }} yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="card narrow">
+    <h2>Details</h2>
+    <div class="dog-hero">
+      {% if dog.photo_path %}
+      <img src="{{ dog.photo_path }}" alt="{{ dog.name }}">
+      {% else %}
+      <span class="dog-emoji big">🐶</span>
+      {% endif %}
+    </div>
+    <ul class="detail-list">
+      <li><span class="muted">Name</span><strong>{{ dog.name }}</strong></li>
+      <li><span class="muted">Birthday</span><strong>{{ dog.birthday.strftime('%d %b %Y') if dog.birthday else 'Not set' }}</strong></li>
+      <li><span class="muted">Age</span><strong>{{ dog.age_label }}</strong></li>
+      <li><span class="muted">Group</span><strong>{{ group.name }}</strong></li>
+    </ul>
+  </section>
+</div>
+{% endblock %}

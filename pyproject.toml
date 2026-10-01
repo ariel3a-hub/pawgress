@@ -1,0 +1,16 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "RUF", "DTZ"]
+ignore = [
+    # FastAPI needs File()/Form() calls as parameter defaults.
+    "B008",
+    # date.today() is fine for a dog birthday label.
+    "DTZ011",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

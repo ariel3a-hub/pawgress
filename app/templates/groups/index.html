@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}My groups · Pawgress{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>My groups</h1>
+    <p class="muted">A group holds your dogs, their events and your shared members.</p>
+  </div>
+</div>
+
+<div class="two-col">
+  <section class="card">
+    <h2>Create a group</h2>
+    <form method="post" action="/groups" class="stack">
+      <label>
+        Group name
+        <input name="name" required maxlength="80" placeholder="Ariel &amp; friends">
+      </label>
+      <button class="btn primary" type="submit">Create group</button>
+    </form>
+
+    <h2 class="spaced">Join a group</h2>
+    <form method="post" action="/groups/join" class="inline-form">
+      <input name="code" required placeholder="Join code" maxlength="12" autocomplete="off">
+      <button class="btn" type="submit">Join</button>
+    </form>
+    <p class="hint">Ask the group owner for the 6 character join code.</p>
+  </section>
+
+  <section class="card">
+    <h2>Your groups ({{ groups | length }})</h2>
+    {% if groups %}
+    <ul class="group-list">
+      {% for group in groups %}
+      <li>
+        <a class="group-row" href="/groups/{{ group.id }}">
+          <span class="group-avatar">{{ group.name[:1] | upper }}</span>
+          <span class="group-meta">
+            <strong>{{ group.name }}</strong>
+            <small class="muted">
+              {{ group.dogs | length }} dog{{ '' if group.dogs | length == 1 else 's' }}
+              · {{ group.memberships | length }} member{{ '' if group.memberships | length == 1 else 's' }}
+              {% if roles.get(group.id) == 'owner' %} · owner{% endif %}
+            </small>
+          </span>
+          <span class="pill">{{ group.join_code }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty">No groups yet. Create one or join with a code.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

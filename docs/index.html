@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pawgress · Dog care, together</title>
+  <meta name="description" content="Pawgress is a web app for taking care of dogs together. Create a group, add your dogs, and log every fed, walked, pooped and peed event so everyone who cares for the dog can see what happened.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐕</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href=".">
+      <span class="brand-mark">🐾</span> Pawgress
+    </a>
+    <nav class="topnav">
+      <a href="https://github.com/ariel3a-hub/pawgress">Source</a>
+      <a class="btn btn-sm" href="#get-it">Get the app</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Dog care, together</p>
+      <h1>Everyone caring for the dog, in one timeline.</h1>
+      <p class="lede">
+        Sign up, create or join a <strong>group</strong>, add your dogs, and log every
+        <strong>fed</strong>, <strong>walked</strong>, <strong>pooped</strong> and <strong>peed</strong>
+        event. Everyone who cares for that dog sees what happened and who did it.
+      </p>
+      <div class="hero-actions">
+        <a class="btn" id="app-link" href="#get-it">Open the live app</a>
+        <a class="btn btn-ghost" href="https://github.com/ariel3a-hub/pawgress">View on GitHub</a>
+      </div>
+      <p class="note" id="app-note" hidden>
+        Set <code>LIVE_APP_URL</code> below to point this button at your deployed instance.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>What it does</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>🐕 Dogs</h3>
+          <p>Name, birthday and photo (JPEG, PNG, WebP or GIF up to 5 MB). Managed by the group owner.</p>
+        </article>
+        <article class="card">
+          <h3>📋 Event log</h3>
+          <p>Press a dog's photo, then press an event. Entries read like "Walked with ariel".</p>
+        </article>
+        <article class="card">
+          <h3>🗓️ Timeline</h3>
+          <p>The full history grouped by day, with a dropdown to switch between dogs when there is more than one.</p>
+        </article>
+        <article class="card">
+          <h3>👥 Groups</h3>
+          <p>Create a group or join one with a 6-character code. Every member can log events.</p>
+        </article>
+        <article class="card">
+          <h3>🔔 Reminders</h3>
+          <p>Any member schedules a reminder and it raises a notification for everyone in the group when it comes due.</p>
+        </article>
+        <article class="card">
+          <h3>🔐 Accounts</h3>
+          <p>Sign up with username, email and password. Passwords are hashed with PBKDF2-SHA256.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Under the hood</h2>
+      <div class="stack">
+        <p>
+          Pawgress is built with <strong>FastAPI</strong>, server-rendered
+          <strong>Jinja2</strong> templates, <strong>SQLAlchemy</strong> and SQLite.
+          It uses server-side sessions and signed cookies, and it supports optional
+          Web Push for system notifications when the tab is closed.
+        </p>
+        <p>
+          Notifications are configurable: toggle them per event type, so you only hear
+          about the things you actually care about.
+        </p>
+      </div>
+    </section>
+
+    <section class="section cta" id="get-it">
+      <h2>Get the app</h2>
+      <p class="lede">
+        This page is a static description of Pawgress. The app itself is a server-side
+        Python application, so it runs on a host that can run Python rather than on
+        GitHub Pages.
+      </p>
+      <div class="hero-actions">
+        <a class="btn" id="app-link-2" href="#get-it">Open the live app</a>
+        <a class="btn btn-ghost" href="https://github.com/ariel3a-hub/pawgress#deploy">Deploy it yourself</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Pawgress · built with FastAPI + Jinja2 + SQLite</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
